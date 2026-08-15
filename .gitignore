@@ -1,0 +1,35 @@
+# --- Secrets (NEVER commit these) ---
+.env
+.env.local
+*.env
+
+# --- Python ---
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+env/
+*.egg-info/
+.pytest_cache/
+
+# --- Data & vector store (large / regenerable — don't bloat the repo) ---
+backend/data/raw_filings/*.htm
+backend/data/raw_filings/*.html
+backend/vectorstore/*
+!backend/vectorstore/.gitkeep
+!backend/data/raw_filings/.gitkeep
+
+# --- Node / React ---
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+frontend/.vite/
+
+# --- OS / editor cruft ---
+.DS_Store
+.vscode/
+.idea/
+
+# --- Logs ---
+*.log

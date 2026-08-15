@@ -1,0 +1,41 @@
+# --- Web framework ---
+fastapi==0.115.6
+uvicorn[standard]==0.32.1
+python-multipart==0.0.19
+pydantic==2.10.4
+pydantic-settings==2.7.0
+
+# --- RAG / LangChain ---
+langchain==0.3.13
+langchain-text-splitters==0.3.4
+langchain-groq==0.2.1
+
+# --- LLM API (Groq — free tier) ---
+groq==0.13.1
+
+# --- Embeddings (local, free — no API cost) ---
+sentence-transformers==3.3.1
+
+# --- Vector DB ---
+chromadb==0.5.23
+
+# --- Document / table parsing ---
+beautifulsoup4==4.12.3
+lxml==5.3.0
+pandas==2.2.3
+tabulate==0.9.0
+
+# --- Evaluation ---
+ragas==0.2.9
+datasets==3.2.0
+
+# --- HTTP client (for live EDGAR fetch, optional path) ---
+requests==2.32.3
+
+# --- Testing ---
+pytest==8.3.4
+pytest-asyncio==0.25.0
+httpx==0.28.1
+
+# --- Env / config ---
+python-dotenv==1.0.1
