@@ -101,4 +101,7 @@ def build_index():
     logger.info(f"Done. Total chunks indexed: {total_chunks}")
     logger.info(f"Vector store persisted at: {settings.chroma_persist_dir}")
 
-    
+
+    if __name__ == "__main__":
+        build_index()
+        
