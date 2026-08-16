@@ -18,3 +18,13 @@ FILING_REGISTRY = {
     "microsoft_10-K.html": {"company": "Microsoft", "fiscal_year": 2025},
     "jp_morgan_10k_data.html": {"company": "JPMorgan Chase", "fiscal_year": 2025},
 }
+
+def load_embedding_model() -> SentenceTransformer:
+    logger.info(f"Loading embedding model: {settings.embedding_model} (first run downloads it, ~1.3GB)")
+    return SentenceTransformer(settings.embedding_model)
+
+
+def get_chroma_collection():
+    client = chromadb.PersistentClient(path=settings.chroma_persist_dir)
+    collection = client.get_or_create_collection(name="filingiq_10k_chunks")
+    return collection
