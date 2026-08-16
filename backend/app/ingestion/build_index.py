@@ -58,3 +58,47 @@ def process_one_filing(filepath: str, company: str, fiscal_year: int) -> list[di
         logger.warning(f"  Table extraction failed for {company}: {e}")
 
     return all_chunks
+
+
+def build_index():
+    embedder = load_embedding_model()
+    collection = get_chroma_collection()
+    total_chunks = 0
+
+    for filename, meta in FILING_REGISTRY.items():
+        filepath = os.path.join(settings.raw_filings_dir, filename)
+        if not os.path.exists(filepath):
+            logger.warning(f"Skipping {filename} — not found at {filepath}")
+            continue
+
+        logger.info(f"Processing {meta['company']} ({filename})...")
+        chunks = process_one_filing(filepath, meta["company"], meta["fiscal_year"])
+
+        if not chunks:
+            logger.warning(f"  No chunks produced for {meta['company']} — check the file/parser.")
+            continue
+
+        texts = [c["text"] for c in chunks]
+        embeddings = embedder.encode(texts, show_progress_bar=False).tolist()
+
+        clean_metadatas = []
+        for c in chunks:
+            md = {k: v for k, v in c["metadata"].items() if k != "full_table_markdown"}
+            clean_metadatas.append(md)
+
+        ids = [f"{meta['company']}_{filename}_{i}" for i in range(len(chunks))]
+
+        collection.upsert(
+            ids=ids,
+            embeddings=embeddings,
+            documents=texts,
+            metadatas=clean_metadatas,
+        )
+
+        total_chunks += len(chunks)
+        logger.info(f"  Indexed {len(chunks)} chunks for {meta['company']}.")
+
+    logger.info(f"Done. Total chunks indexed: {total_chunks}")
+    logger.info(f"Vector store persisted at: {settings.chroma_persist_dir}")
+
+    
