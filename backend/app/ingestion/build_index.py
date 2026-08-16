@@ -28,3 +28,33 @@ def get_chroma_collection():
     client = chromadb.PersistentClient(path=settings.chroma_persist_dir)
     collection = client.get_or_create_collection(name="filingiq_10k_chunks")
     return collection
+
+
+def process_one_filing(filepath: str, company: str, fiscal_year: int) -> list[dict]:
+    with open(filepath, "r", encoding="utf-8", errors="ignore") as f:
+        html = f.read()
+
+    all_chunks = []
+
+    sections = split_into_sections(html)
+    for section_name, section_text in sections.items():
+        if section_name == "Financial Statements":
+            continue
+        chunks = chunk_narrative_section(section_text, company, fiscal_year, section_name)
+        all_chunks.extend(chunks)
+        logger.info(f"  {section_name}: {len(chunks)} narrative chunks")
+
+    try:
+        tables = extract_tables_from_html(html)
+        table_chunk_count = 0
+        for i, df in enumerate(tables):
+            if df.shape[0] < 2 or df.shape[1] < 2:
+                continue
+            chunks = table_to_row_sentences(df, company, fiscal_year, table_name=f"Table {i}")
+            all_chunks.extend(chunks)
+            table_chunk_count += len(chunks)
+        logger.info(f"  Tables: {table_chunk_count} chunks from {len(tables)} detected tables")
+    except Exception as e:
+        logger.warning(f"  Table extraction failed for {company}: {e}")
+
+    return all_chunks
