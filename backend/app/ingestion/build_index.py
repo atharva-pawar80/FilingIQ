@@ -1,3 +1,11 @@
+"""
+build_index.py
+Phase 1's final piece: takes your downloaded 10-K HTML files, runs them
+through section-splitting + chunking, embeds every chunk locally with
+sentence-transformers, and stores everything in a persistent Chroma
+vector store on disk.
+"""
+
 import logging
 import os
 
@@ -9,7 +17,6 @@ from app.ingestion.section_split import split_into_sections
 from app.ingestion.chunk_narrative import chunk_narrative_section
 from app.ingestion.chunk_tables import extract_tables_from_html, table_to_row_sentences
 
-
 logging.basicConfig(level=settings.log_level)
 logger = logging.getLogger("filingiq.build_index")
 
@@ -18,6 +25,7 @@ FILING_REGISTRY = {
     "microsoft_10-K.html": {"company": "Microsoft", "fiscal_year": 2025},
     "jp_morgan_10k_data.html": {"company": "JPMorgan Chase", "fiscal_year": 2025},
 }
+
 
 def load_embedding_model() -> SentenceTransformer:
     logger.info(f"Loading embedding model: {settings.embedding_model} (first run downloads it, ~1.3GB)")
@@ -102,6 +110,6 @@ def build_index():
     logger.info(f"Vector store persisted at: {settings.chroma_persist_dir}")
 
 
-    if __name__ == "__main__":
-        build_index()
+if __name__ == "__main__":
+    build_index()
         
