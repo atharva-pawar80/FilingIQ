@@ -38,3 +38,34 @@ def build_prompt(chunks: list, question: str) -> str:
 
     context = "\n\n---\n\n".join(context_parts)
     return PROMPT_TEMPLATE.format(context=context, question=question)
+
+
+def ask(question: str, k: int = 4) -> str:
+    vectorstore = load_vectorstore()
+    chunks = retrieve(vectorstore, question, k=k)
+
+    prompt = build_prompt(chunks, question)
+
+    llm = ChatGroq(
+        model=os.getenv("GROQ_MODEL", "openai/gpt-oss-120b"),
+        temperature=0,  # 0 = deterministic, favors sticking to given facts
+                         # over creative phrasing — important for a
+                         # finance Q&A tool where consistency matters.
+    )
+
+    response = llm.invoke(prompt)
+    return response.content, chunks
+
+
+if __name__ == "__main__":
+    question = "What are the main risk factors in apple mentioned?"
+    print(f"Question: {question}\n")
+
+    answer, source_chunks = ask(question)
+
+    print("--- Answer ---")
+    print(answer)
+
+    print("\n--- Retrieved from ---")
+    for doc in source_chunks:
+        print(f"  {doc.metadata['company']}, page {doc.metadata['page']}")
