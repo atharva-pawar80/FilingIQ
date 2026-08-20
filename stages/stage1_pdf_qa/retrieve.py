@@ -14,3 +14,9 @@ def load_vectorstore():
         persist_directory=VECTORSTORE_DIR,
     )
     return vectorstore
+
+def retrieve(vectorstore, query: str, k: int = 4):
+    
+    results = vectorstore.similarity_search(query, k=k)
+    return results
+
