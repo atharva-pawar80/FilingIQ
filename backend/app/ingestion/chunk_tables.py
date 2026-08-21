@@ -19,7 +19,35 @@ Solution — dual representation:
      form for retrieval, table form for answer accuracy.
 """
 
+import re
+
 import pandas as pd
+
+
+def is_likely_financial_table(df: pd.DataFrame) -> bool:
+    """
+    Heuristic filter to skip junk 'tables' that pandas.read_html() picks up
+    from page layout/navigation elements. Real financial table = decent
+    size AND a meaningful fraction of cells look numeric.
+    """
+    if df.shape[0] < 3 or df.shape[1] < 2:
+        return False
+
+    numeric_pattern = re.compile(r"^\(?\$?-?[\d,]+\.?\d*\)?%?$")
+    total_cells = 0
+    numeric_cells = 0
+
+    for col in df.columns[1:]:
+        for value in df[col].dropna():
+            total_cells += 1
+            if numeric_pattern.match(str(value).strip()):
+                numeric_cells += 1
+
+    if total_cells == 0:
+        return False
+
+    numeric_ratio = numeric_cells / total_cells
+    return numeric_ratio >= 0.4
 
 
 def table_to_row_sentences(df: pd.DataFrame, company: str, fiscal_year: int, table_name: str) -> list[dict]:
