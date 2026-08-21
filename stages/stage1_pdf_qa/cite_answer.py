@@ -75,3 +75,17 @@ def ask_with_citations(question: str, k: int = 4) -> dict:
         "sources": source_lookup,
 
     }
+
+def print_result(result: dict):
+    print(f"Question: {result['question']}\n")
+    print("--- Answer ---")
+    print(result["answer"])
+    print("\n--- References ---")
+    for src in result["sources"]:
+        print(f"[{src['number']}] {src['company']}, page {src['page']}")
+        print(f"    \"{src['snippet']}...\"")
+
+
+if __name__ == "__main__":
+    result = ask_with_citations("What are the main risk factors mentioned in Apple?")
+    print_result(result)
