@@ -52,3 +52,26 @@ def build_numbered_sources(chunks: list) -> tuple[str, list[dict]]:
 
     context = "\n\n".join(context_parts)
     return context, source_lookup
+
+
+
+def ask_with_citations(question: str, k: int = 4) -> dict:
+    vectorstore = load_vectorstore()
+    chunks = retrieve(vectorstore, question, k=k)
+
+    context, source_lookup = build_numbered_sources(chunks)
+    prompt = PROMPT_TEMPLATE.format(context=context, question=question)
+
+    llm = ChatGroq(
+        model=os.getenv("GROQ_MODEL", "openai/gpt-oss-120b"),
+        temperature=0,
+    )
+
+    response = llm.invoke(prompt)
+
+    return {
+        "question": question,
+        "answer": response.content,
+        "sources": source_lookup,
+
+    }
