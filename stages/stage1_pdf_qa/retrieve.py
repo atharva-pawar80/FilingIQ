@@ -21,24 +21,7 @@ def retrieve(vectorstore, query: str, k: int = 4):
     return results
 
 def retrieve_with_scores(vectorstore, query: str, k: int = 6, score_threshold: float = 0.5):
-    """
-    Like retrieve(), but returns (document, score) pairs and filters out
-    weak matches — chunks retrieved just because they were in the top-k,
-    not because they're actually relevant.
-
-    Why this matters: Chroma's default similarity_search always returns
-    exactly k results, even if result #4 is a mediocre match (like a
-    Table of Contents page landing in results because it happens to
-    contain the word "Risk Factors" as a heading, with no real content).
-    Filtering by score means "give me relevant chunks, however many
-    that turns out to be" instead of "give me exactly 4, good or bad."
-
-    Note: Chroma's default distance metric is COSINE DISTANCE, where
-    LOWER = more similar (0 = identical, higher = less similar) — this
-    is the opposite of cosine SIMILARITY, where higher = better. This
-    trips people up constantly, so double-check which one your vector
-    store returns before tuning a threshold, or you'll filter backwards.
-    """
+    
     results = vectorstore.similarity_search_with_score(query, k=k)
 
     filtered = [(doc, score) for doc, score in results if score <= score_threshold]
