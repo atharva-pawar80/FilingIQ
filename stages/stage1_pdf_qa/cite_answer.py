@@ -49,11 +49,11 @@ def build_numbered_sources(scored_chunks: list) -> tuple[str, list[dict]]:
 
 
 
-def ask_with_citations(question: str, k: int = 4) -> dict:
+def ask_with_citations(question: str, k: int = 6, score_threshold: float = 0.9) -> dict:
     vectorstore = load_vectorstore()
-    chunks = retrieve(vectorstore, question, k=k)
+    scored_chunks = retrieve_with_scores(vectorstore, question, k=k, score_threshold=score_threshold)
 
-    context, source_lookup = build_numbered_sources(chunks)
+    context, source_lookup = build_numbered_sources(scored_chunks)
     prompt = PROMPT_TEMPLATE.format(context=context, question=question)
 
     llm = ChatGroq(
@@ -67,7 +67,6 @@ def ask_with_citations(question: str, k: int = 4) -> dict:
         "question": question,
         "answer": response.content,
         "sources": source_lookup,
-
     }
 
 def print_result(result: dict):
