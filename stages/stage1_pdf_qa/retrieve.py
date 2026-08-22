@@ -45,3 +45,7 @@ if __name__ == "__main__":
     scored_results = vectorstore.similarity_search_with_score(test_query, k=6)
     for doc, score in scored_results:
         print(f"Score: {score:.4f} | {doc.metadata['company']}, page {doc.metadata['page']} | {doc.page_content[:80]}")
+
+
+    filtered_results = retrieve_with_scores(vectorstore, test_query, k=6, score_threshold=0.9)
+    print(f"\n{len(filtered_results)} of 6 passed the 0.9 threshold")
