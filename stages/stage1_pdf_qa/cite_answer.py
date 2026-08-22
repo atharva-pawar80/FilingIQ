@@ -2,7 +2,7 @@ import os
 
 from dotenv import load_dotenv
 from langchain_groq import ChatGroq
-
+from retrieve import load_vectorstore, retrieve_with_scores
 from retrieve import load_vectorstore, retrieve
 
 load_dotenv()
