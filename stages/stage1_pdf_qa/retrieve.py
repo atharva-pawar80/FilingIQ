@@ -41,7 +41,7 @@ if __name__ == "__main__":
         print(f"Company: {doc.metadata['company']}, Page: {doc.metadata['page']}")
         print(doc.page_content[:300])
         print()
-        print("\n--- Checking raw similarity scores (to calibrate threshold) ---")
-        scored_results = vectorstore.similarity_search_with_score(test_query, k=6)
-        for doc, score in scored_results:
-            print(f"Score: {score:.4f} | {doc.metadata['company']}, page {doc.metadata['page']} | {doc.page_content[:80]}")
+    print("\n--- Checking raw similarity scores (to calibrate threshold) ---")
+    scored_results = vectorstore.similarity_search_with_score(test_query, k=6)
+    for doc, score in scored_results:
+        print(f"Score: {score:.4f} | {doc.metadata['company']}, page {doc.metadata['page']} | {doc.page_content[:80]}")
