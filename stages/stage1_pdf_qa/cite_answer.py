@@ -27,18 +27,11 @@ Question: {question}
 Answer (with inline citations like [1], [2]):"""
 
 
-def build_numbered_sources(chunks: list) -> tuple[str, list[dict]]:
-    """
-    Numbers each chunk (1-indexed, matching how humans naturally cite),
-    builds the context string for the prompt, AND builds a separate
-    lookup list so we can print a clean "References" section afterward
-    that maps [1] -> actual company/page, without the LLM needing to
-    know or repeat that metadata itself.
-    """
+def build_numbered_sources(scored_chunks: list) -> tuple[str, list[dict]]:
     context_parts = []
     source_lookup = []
 
-    for i, doc in enumerate(chunks, start=1):
+    for i, (doc, score) in enumerate(scored_chunks, start=1):
         company = doc.metadata.get("company", "Unknown")
         page = doc.metadata.get("page", "?")
 
@@ -47,6 +40,7 @@ def build_numbered_sources(chunks: list) -> tuple[str, list[dict]]:
             "number": i,
             "company": company,
             "page": page,
+            "score": score,
             "snippet": doc.page_content[:150],
         })
 
