@@ -75,7 +75,7 @@ def print_result(result: dict):
     print(result["answer"])
     print("\n--- References ---")
     for src in result["sources"]:
-        print(f"[{src['number']}] {src['company']}, page {src['page']}")
+        print(f"[{src['number']}] {src['company']}, page {src['page']} (distance: {src['score']:.3f})")
         print(f"    \"{src['snippet']}...\"")
 
 
